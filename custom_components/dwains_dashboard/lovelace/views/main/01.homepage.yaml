@@ -441,6 +441,27 @@
                                   additional_info += 'S-E!<br>';
                                 }
                               {% endif %}
+                              {% if room["media_player"] %}
+                                if(states['{{ room["media_player"] }}']){
+                                  {% if room["media_player"].split('.')[0] != 'group' %}
+                                    if(states['{{ room["media_player"] }}'] && states['{{ room["media_player"] }}'].state == 'on' || states['{{ room["media_player"] }}'] && states['{{ room["media_player"] }}'].state == 'playing'){
+                                      additional_info += '<ha-icon style="height: 20px; color: var(--dwains-theme-accent)" icon="{{ _dd_icons.media_player|default('mdi:play-pause') }}"></ha-icon><br>';
+                                    }
+                                  {% else %}
+                                    const entitiesFromGroup = states['{{ room["media_player"] }}'].attributes['entity_id'];
+                                    for (let i = 0; i < entitiesFromGroup.length; i++) {
+                                      if(states[entitiesFromGroup[i]] && states[entitiesFromGroup[i]].state == 'on' ||
+                                          states[entitiesFromGroup[i]] && states[entitiesFromGroup[i]].state == 'playing') {
+                                        additional_info += '<ha-icon style="height: 20px; color: var(--dwains-theme-accent)" icon="{{ _dd_icons.media_player|default('mdi:play-pause') }}"></ha-icon><br>';
+                                        break;
+                                      }
+                                    }
+                                  {% endif %}
+                                } else {
+                                  console.log("Dwains Theme Error: Invalid rooms.yaml:{{ room["name"] }}.media_player entity!");
+                                  additional_info += 'W-E!<br>';
+                                }
+                              {% endif %}
                               {% if room["vibration"] %}
                                 if(states['{{ room["vibration"] }}']){
                                   {% if room["vibration"].split('.')[0] == 'binary_sensor' or room["vibration"].split('.')[0] == 'sensor' %}
